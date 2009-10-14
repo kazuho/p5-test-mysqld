@@ -1,0 +1,24 @@
+Test::mysqld
+===========================
+
+Test::mysqld is mysqld runner for tests.
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+See Makefile.PL.
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2009 by Cybozu Labs, Inc.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.

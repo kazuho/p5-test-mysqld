@@ -1,0 +1,19 @@
+Revision history for Perl extension Test::mysqld.
+
+0.06  Fri Aug 07 09:33:00 2009
+	- fix misdetection of mysql programs on Solaris
+
+0.05  Thu Aug 06 05:00:00 2009
+	- pass --basedir to mysql_install_db (or would not work if mysql was installed into a different directory than that specified as build option)
+
+0.04  Wed Aug 05 06:00:00 2009
+	- return undef from new() and set $errsrt if necessary programs were not found
+
+0.03  Wed Aug 05 00:00:02 2009
+	- fix bug that causes somewhat strange behaviour in I/O (see svn)
+
+0.02  Wed Aug 05 00:00:01 2009
+	- permit mysqld to run under root privileges
+
+0.01  Wed Aug 05 00:00:00 2009
+	- initial release
