@@ -14,7 +14,7 @@ my $mysqld = Test::mysqld->new(
 plan tests => 3;
 
 my $base_dir = $mysqld->base_dir;
-my $dsn = $mysqld->dsn(dbname => 'test');
+my $dsn = $mysqld->dsn;
 
 is(
     $dsn,

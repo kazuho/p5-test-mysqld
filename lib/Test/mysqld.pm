@@ -5,6 +5,7 @@ use warnings;
 
 use Class::Accessor::Lite;
 use Cwd;
+use DBI;
 use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
@@ -81,6 +82,7 @@ sub dsn {
         $args{mysql_socket} ||= $self->my_cnf->{socket};
     }
     $args{user} ||= 'root';
+    $args{dbname} ||= 'test';
     return 'DBI:mysql:' . join(';', map { "$_=$args{$_}" } sort keys %args);
 }
 
@@ -121,6 +123,12 @@ sub start {
         sleep 0.1;
     }
     $self->pid($pid);
+    { # create 'test' database
+        my $dbh = DBI->connect($self->dsn(dbname => 'mysql'))
+            or die $DBI::errstr;
+        $dbh->do('CREATE DATABASE IF NOT EXISTS test')
+            or die $dbh->errstr;
+    }
 }
 
 sub stop {
