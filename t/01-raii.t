@@ -11,12 +11,18 @@ my $mysqld = Test::mysqld->new(
     },
 ) or plan skip_all => $Test::mysqld::errstr;
 
-plan tests => 2;
+plan tests => 3;
 
 my $base_dir = $mysqld->base_dir;
-my $dbh = DBI->connect(
-    "DBI:mysql:test;mysql_socket=$base_dir/tmp/mysql.sock;user=root",
+my $dsn = $mysqld->dsn(dbname => 'test');
+
+is(
+    $dsn,
+    "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock;user=root",
+    'check dsn',
 );
+
+my $dbh = DBI->connect($dsn);
 ok($dbh, 'connect to mysqld');
 
 undef $mysqld;

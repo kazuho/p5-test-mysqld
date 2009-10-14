@@ -73,6 +73,17 @@ sub DESTROY {
         if defined $self->pid;
 }
 
+sub dsn {
+    my ($self, %args) = @_;
+    $args{port} ||= $self->my_cnf->{port}
+        if $self->my_cnf->{port};
+    unless (defined $args{port}) {
+        $args{mysql_socket} ||= $self->my_cnf->{socket};
+    }
+    $args{user} ||= 'root';
+    return 'DBI:mysql:' . join(';', map { "$_=$args{$_}" } sort keys %args);
+}
+
 sub start {
     my $self = shift;
     return
@@ -216,8 +227,7 @@ Test::mysqld - mysqld runner for tests
   plan tests => XXX;
   
   my $dbh = DBI->connect(
-    "DBI:mysql:...;mysql_socket=" . $mysqld->base_dir . "/tmp/mysql.sock",
-    ...
+    $mysqld->dsn(dbname => 'test'),
   );
 
 =head1 DESCRIPTION
@@ -243,6 +253,10 @@ A hash containing the list of name=value pairs to be written into my.cnf.  The p
 =head2 mysqld
 
 Path to C<mysql_install_db> script or C<mysqld> program bundled to the mysqld distribution.  If not set, the program is automatically search by looking up $PATH and other prefixed directories.
+
+=head2 dsn
+
+Builds and returns dsn by using given parameters (if any).  Default username is 'root', and dbname is 'test'.
 
 =head2 pid
 
