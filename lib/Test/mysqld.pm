@@ -3,6 +3,7 @@ package Test::mysqld;
 use strict;
 use warnings;
 
+use 5.008;
 use Class::Accessor::Lite;
 use Cwd;
 use DBI;
