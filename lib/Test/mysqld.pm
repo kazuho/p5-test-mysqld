@@ -11,7 +11,7 @@ use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
 
-our $VERSION = 0.06;
+our $VERSION = '0.07';
 
 our $errstr;
 our @SEARCH_PATHS = qw(/usr/local/mysql);

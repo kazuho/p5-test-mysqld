@@ -1,5 +1,9 @@
 Revision history for Perl extension Test::mysqld.
 
+0.07  Thu Oct 15 09:20:00 2009
+	- add dsn generator
+	- create "test" database if not exists
+
 0.06  Fri Aug 07 09:33:00 2009
 	- fix misdetection of mysql programs on Solaris
 
