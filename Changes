@@ -1,6 +1,6 @@
 Revision history for Perl extension Test::mysqld.
 
-0.08  Thu Oct 15 15:10:00 2009
+0.09  Thu Oct 15 15:15:00 2009
 	- always set "host" attribute in dsn if "port" exists (or will fail to connect)
 
 0.07  Thu Oct 15 09:20:00 2009
