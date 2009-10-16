@@ -12,7 +12,9 @@ my $mysqld = Test::mysqld->new(
     },
 ) or plan skip_all => $Test::mysqld::errstr;
 
-plan tests => 2;
+plan tests => 3;
+
+ok(DBI->connect($mysqld->dsn), 'check if db is ready');
 
 unless (my $pid = Test::SharedFork::fork) {
     die "fork failed:$!"
