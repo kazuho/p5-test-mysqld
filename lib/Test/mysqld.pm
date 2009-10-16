@@ -23,6 +23,7 @@ my %Defaults = (
     mysql_install_db => undef,
     mysqld           => undef,
     pid              => undef,
+    _owner_pid       => undef,
 );
 
 Class::Accessor::Lite->mk_accessors(keys %Defaults);
@@ -31,7 +32,8 @@ sub new {
     my $klass = shift;
     my $self = bless {
         %Defaults,
-        @_ == 1 ? %{$_[0]} : @_
+        @_ == 1 ? %{$_[0]} : @_,
+        _owner_pid => $$,
     }, $klass;
     $self->my_cnf({
         %{$self->my_cnf},
@@ -72,7 +74,7 @@ sub new {
 sub DESTROY {
     my $self = shift;
     $self->stop
-        if defined $self->pid;
+        if defined $self->pid && $$ == $self->_owner_pid;
 }
 
 sub dsn {
