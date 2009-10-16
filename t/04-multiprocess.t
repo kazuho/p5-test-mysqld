@@ -12,10 +12,7 @@ my $mysqld = Test::mysqld->new(
     },
 ) or plan skip_all => $Test::mysqld::errstr;
 
-plan tests => 3;
-Test::SharedFork->parent;
-
-ok(DBI->connect($mysqld->dsn), 'initial connect');
+plan tests => 2;
 
 unless (my $pid = Test::SharedFork::fork) {
     die "fork failed:$!"

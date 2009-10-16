@@ -1,5 +1,8 @@
 Revision history for Perl extension Test::mysqld.
 
+0.10  Fri Oct 16 13:05:00 2009
+	- do not destroy mysqld when child process exits
+
 0.09  Thu Oct 15 15:15:00 2009
 	- always set "host" attribute in dsn if "port" exists (or will fail to connect)
 
