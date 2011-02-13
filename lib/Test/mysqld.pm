@@ -170,11 +170,13 @@ sub setup {
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
         my $cmd = $self->mysql_install_db;
+        # We should specify --defaults-file option first.
+        $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
         my $mysql_base_dir = $self->mysql_install_db;
         if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
             $cmd .= " --basedir='$mysql_base_dir'";
         }
-        $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf' 2>&1";
+        $cmd .= " 2>&1";
         open $fh, '-|', $cmd
             or die "failed to spawn mysql_install_db:$!";
         my $output;
