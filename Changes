@@ -1,5 +1,8 @@
 Revision history for Perl extension Test::mysqld.
 
+0.12  Mon Feb 14 13:37:00 2011
+	- now compatible with MySQL 5.0.x (by hiratara)
+
 0.11  Fri Oct 16 13:12:00 2009
 	- test_requires Test::SharedFork 0.06
 
