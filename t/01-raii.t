@@ -11,7 +11,7 @@ my $mysqld = Test::mysqld->new(
     },
 ) or plan skip_all => $Test::mysqld::errstr;
 
-plan tests => 3;
+plan tests => 4;
 
 my $base_dir = $mysqld->base_dir;
 my $dsn = $mysqld->dsn;
@@ -25,6 +25,9 @@ is(
 my $dbh = DBI->connect($dsn);
 ok($dbh, 'connect to mysqld');
 
+local $? = 255; # dummy vale
 undef $mysqld;
 sleep 1; # just in case
+
+is($?, 255, "\$? is left in tact");
 ok(! -e "$base_dir/tmp/mysql.sock", "mysqld is down");
