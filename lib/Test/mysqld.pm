@@ -11,7 +11,7 @@ use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 our $errstr;
 our @SEARCH_PATHS = qw(/usr/local/mysql);
@@ -222,7 +222,7 @@ sub _get_path_of {
     $path;
 }
 
-1;
+"lestrrat-san he";
 __END__
 
 =head1 NAME
