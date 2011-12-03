@@ -109,6 +109,7 @@ sub start {
         exec(
             $self->mysqld,
             '--defaults-file=' . $self->base_dir . '/etc/my.cnf',
+            '--tmpdir=' . $self->base_dir . '/tmp',
             '--user=root',
         );
         die "failed to launch mysqld:$?";
@@ -174,6 +175,7 @@ sub setup {
         my $cmd = $self->mysql_install_db;
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
+        $cmd .= " --tmpdir='" . $self->base_dir . "/tmp'";
         my $mysql_base_dir = $self->mysql_install_db;
         if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
             $cmd .= " --basedir='$mysql_base_dir'";
