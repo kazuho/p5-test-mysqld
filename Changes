@@ -1,5 +1,9 @@
 Revision history for Perl extension Test::mysqld.
 
+0.14
+	- added "sbin" to mysql subdirs (masaki)
+	- set tmpdir (lecstor)
+
 0.13
 	- keep $? in tact after calling stop()
 
