@@ -51,6 +51,7 @@ sub new {
     $self->my_cnf->{socket} ||= $self->base_dir . "/tmp/mysql.sock";
     $self->my_cnf->{datadir} ||= $self->base_dir . "/var";
     $self->my_cnf->{'pid-file'} ||= $self->base_dir . "/tmp/mysqld.pid";
+    $self->my_cnf->{tmpdir} ||= $self->base_dir . "/tmp";
     if (! defined $self->mysql_install_db) {
         my $prog = _find_program(qw/mysql_install_db bin scripts/)
             or return;
@@ -109,7 +110,6 @@ sub start {
         exec(
             $self->mysqld,
             '--defaults-file=' . $self->base_dir . '/etc/my.cnf',
-            '--tmpdir=' . $self->base_dir . '/tmp',
             '--user=root',
         );
         die "failed to launch mysqld:$?";
@@ -175,7 +175,6 @@ sub setup {
         my $cmd = $self->mysql_install_db;
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
-        $cmd .= " --tmpdir='" . $self->base_dir . "/tmp'";
         my $mysql_base_dir = $self->mysql_install_db;
         if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
             $cmd .= " --basedir='$mysql_base_dir'";
