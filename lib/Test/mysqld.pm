@@ -62,9 +62,9 @@ sub new {
             or return;
         $self->mysqld($prog);
     }
-    die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
-        if -e $self->my_cnf->{'pid-file'};
     if ($self->auto_start) {
+        die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
+            if -e $self->my_cnf->{'pid-file'};
         $self->setup
             if $self->auto_start >= 2;
         $self->start;
