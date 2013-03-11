@@ -220,6 +220,13 @@ sub _get_path_of {
         if $path;
     $path = ''
         unless -x $path;
+
+    if (-l $path) {
+        require File::Spec;
+        require File::Basename;
+        my $base = File::Basename::dirname($path);
+        $path = File::Spec->rel2abs(readlink($path), $base);
+    }
     $path;
 }
 
