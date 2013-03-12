@@ -1,5 +1,8 @@
 Revision history for Perl extension Test::mysqld.
 
+0.16
+	- fix compatibility issue when trying to use mysqld of homebrew (songmu)
+
 0.15
 	- only issue the "already running" error when we ask to start the database and not all the time.  Solves a bug when you try to connect to an already running test mysql database.  (jjnapiork)
 
