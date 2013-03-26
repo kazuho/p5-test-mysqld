@@ -7,6 +7,7 @@ use 5.008;
 use Class::Accessor::Lite;
 use Cwd;
 use DBI;
+use File::Copy::Recursive qw(dircopy);
 use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
@@ -23,6 +24,7 @@ my %Defaults = (
     mysql_install_db => undef,
     mysqld           => undef,
     pid              => undef,
+    copy_data_from   => undef,
     _owner_pid       => undef,
 );
 
@@ -159,6 +161,14 @@ sub setup {
     for my $subdir (qw/etc var tmp/) {
         mkdir $self->base_dir . "/$subdir";
     }
+    # copy data files
+    if ($self->copy_data_from) {
+        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
+            or die(
+                "could not dircopy @{[$self->copy_data_from]} to "
+                    . "@{[$self->my_cnf->{datadir}]}:$!"
+                );
+    }
     # my.cnf
     open my $fh, '>', $self->base_dir . '/etc/my.cnf'
         or die "failed to create file:" . $self->base_dir . "/etc/my.cnf:$!";
@@ -267,6 +277,10 @@ Create and run a mysqld instance.  The instance is terminated when the returned 
 =head2 base_dir
 
 Returns directory under which the mysqld instance is being created.  The property can be set as a parameter of the C<new> function, in which case the directory will not be removed at exit.
+
+=head2 copy_data_from
+
+If specified, uses a copy of the specified directory as the data directory of MySQL.  "Mysql" database (which is used to store admistrative information) is automatically created if necessary by invoking mysql_install_db.
 
 =head2 my_cnf
 
