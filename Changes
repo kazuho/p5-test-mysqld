@@ -1,5 +1,9 @@
 Revision history for Perl extension Test::mysqld.
 
+0.17
+	- introduce "copy_data_from", to start-up MySQL with prefilled tables
+	- add "read_log" function that returns the contents of mysqld log
+
 0.16
 	- fix compatibility issue when trying to use mysqld of homebrew (songmu)
 
