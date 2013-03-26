@@ -11,7 +11,7 @@ my $mysqld = Test::mysqld->new(
     },
 ) or plan skip_all => $Test::mysqld::errstr;
 
-plan tests => 4;
+plan tests => 5;
 
 my $base_dir = $mysqld->base_dir;
 my $dsn = $mysqld->dsn;
@@ -24,6 +24,8 @@ is(
 
 my $dbh = DBI->connect($dsn);
 ok($dbh, 'connect to mysqld');
+
+like($mysqld->read_log, qr/ready for connections/, 'read_log');
 
 local $? = 255; # dummy vale
 undef $mysqld;

@@ -119,14 +119,7 @@ sub start {
     close $logfh;
     while (! -e $self->my_cnf->{'pid-file'}) {
         if (waitpid($pid, WNOHANG) > 0) {
-            die "*** failed to launch mysqld ***\n" . do {
-                my $log = '';
-                if (open $logfh, '<', $self->base_dir . '/tmp/mysqld.log') {
-                    $log = do { local $/; <$logfh> };
-                    close $logfh;
-                }
-                $log;
-            };
+            die "*** failed to launch mysqld ***\n" . $self->read_log;
         }
         sleep 0.1;
     }
@@ -205,6 +198,13 @@ sub setup {
         close $fh
             or die "*** mysql_install_db failed ***\n$output\n";
     }
+}
+
+sub read_log {
+    my $self = shift;
+    open my $logfh, '<', $self->base_dir . '/tmp/mysqld.log'
+        or die "failed to open file:tmp/mysql.log:$!";
+    do { local $/; <$logfh> };
 }
 
 sub _find_program {
@@ -311,6 +311,10 @@ Stops mysqld.
 =head2 setup
 
 Setups the mysqld instance.
+
+=head2 read_log
+
+Returns the contents of the mysqld log file.
 
 =head1 COPYRIGHT
 
