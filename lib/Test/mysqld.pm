@@ -21,8 +21,8 @@ my %Defaults = (
     auto_start       => 2,
     base_dir         => undef,
     my_cnf           => {},
-    mysql_install_db => undef,
-    mysqld           => undef,
+    mysql_install_db => undef || $ENV{TEST_MYSQLD_INSTALL_DB},
+    mysqld           => undef || $ENV{TEST_MYSQLD_PATH},
     pid              => undef,
     copy_data_from   => undef,
     _owner_pid       => undef,
@@ -315,6 +315,14 @@ Setups the mysqld instance.
 =head2 read_log
 
 Returns the contents of the mysqld log file.
+
+=head1 ENVIRONMENT VARIABLES
+
+=head2 TEST_MYSQLD_PATH
+
+=head2 TEST_MYSQLD_INSTALL_DB
+
+Path to C<mysql_install_db> script or C<mysqld> program bundled to the mysqld distribution.  If set will overwrite the default search. Passing either option to the constructor takes precedence over these environment variables.
 
 =head1 COPYRIGHT
 
