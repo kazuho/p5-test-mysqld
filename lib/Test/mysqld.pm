@@ -280,7 +280,7 @@ Returns directory under which the mysqld instance is being created.  The propert
 
 =head2 copy_data_from
 
-If specified, uses a copy of the specified directory as the data directory of MySQL.  "Mysql" database (which is used to store admistrative information) is automatically created if necessary by invoking mysql_install_db.
+If specified, uses a copy of the specified directory as the data directory of MySQL.  "Mysql" database (which is used to store administrative information) is automatically created if necessary by invoking mysql_install_db.
 
 =head2 my_cnf
 
