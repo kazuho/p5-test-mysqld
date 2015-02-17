@@ -9,6 +9,7 @@ use Cwd;
 use DBI;
 use File::Copy::Recursive qw(dircopy);
 use File::Temp qw(tempdir);
+use Path::Tiny qw(path);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
 
@@ -18,13 +19,14 @@ our $errstr;
 our @SEARCH_PATHS = qw(/usr/local/mysql);
 
 my %Defaults = (
-    auto_start       => 2,
+    auto_start       => 3,
     base_dir         => undef,
     my_cnf           => {},
     mysql_install_db => undef,
     mysqld           => undef,
     pid              => undef,
     copy_data_from   => undef,
+    run_sql_commands => [],
     _owner_pid       => undef,
 );
 
@@ -70,6 +72,8 @@ sub new {
         $self->setup
             if $self->auto_start >= 2;
         $self->start;
+        $self->run_sql
+            if $self->auto_start >= 3;
     }
     $self;
 }
@@ -130,6 +134,47 @@ sub start {
         $dbh->do('CREATE DATABASE IF NOT EXISTS test')
             or die $dbh->errstr;
     }
+}
+
+sub run_sql {
+    my $self = shift;
+
+    die 'mysqld is not running (' . $self->my_cnf->{'pid-file'} . ')'
+        unless -e $self->my_cnf->{'pid-file'};
+
+    $self->_run_sql_command($_) foreach @{ $self->run_sql_commands };
+
+    return $self;
+}
+
+sub _run_sql_command {
+    my ($self, $schema_filename) = @_;
+
+    # TODO: Think of a way to avoid hard-coding these
+    my $dbname = 'test';
+    my $user = 'root';
+
+    my $socket = $self->my_cnf->{socket};
+    my @command = (
+        _find_program('mysql'),
+        "--database=$dbname",
+        "--socket=$socket",
+        "--user=$user",
+    );
+
+    my $pid = open my $mysql_input_fh, '|-';
+    defined $pid || die "Can't fork: $!";
+
+    if ($pid) {
+        binmode $mysql_input_fh, ':utf8';
+        print $mysql_input_fh path($schema_filename)->slurp_utf8;
+        close $mysql_input_fh;
+        waitpid $pid, 0;
+    }
+    else {
+        exec @command or die "Can't exec mysql: $!";
+    }
+
 }
 
 sub stop {
@@ -307,6 +352,10 @@ Starts mysqld.
 =head2 stop
 
 Stops mysqld.
+
+=head2 run_sql
+
+Passes SQL commands from specified filenames to the STDIN of C<mysql>.
 
 =head2 setup
 
