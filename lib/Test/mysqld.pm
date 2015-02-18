@@ -25,6 +25,7 @@ my %Defaults = (
     mysqld           => undef,
     pid              => undef,
     copy_data_from   => undef,
+    run_sql_commands => [],
     _owner_pid       => undef,
 );
 
@@ -130,6 +131,50 @@ sub start {
         $dbh->do('CREATE DATABASE IF NOT EXISTS test')
             or die $dbh->errstr;
     }
+    $self->run_sql;
+}
+
+sub run_sql {
+    my $self = shift;
+
+    die 'mysqld is not running (' . $self->my_cnf->{'pid-file'} . ')'
+        unless -e $self->my_cnf->{'pid-file'};
+
+    $self->_run_sql_command($_) foreach @{ $self->run_sql_commands };
+
+    return $self;
+}
+
+sub _run_sql_command {
+    my ($self, $schema_filename) = @_;
+
+    # TODO: Think of a way to avoid hard-coding these
+    my $dbname = 'test';
+    my $user = 'root';
+
+    my $socket = $self->my_cnf->{socket};
+    my @command = (
+        _find_program('mysql'),
+        "--database=$dbname",
+        "--socket=$socket",
+        "--user=$user",
+    );
+
+    open my($schema_fh), '<', $schema_filename
+        or die "Cannot read from $schema_filename";
+
+    my $pid = fork;
+    if ($pid) {
+        waitpid $pid, 0;
+    }
+    else {
+        my $fileno = fileno $schema_fh;
+        open STDIN, "<&$fileno"
+            or die "Cannot send $schema_filename to mysql";
+        exec @command or die "Can't exec mysql: $!";
+    }
+
+    close $schema_fh or die "Cannot close $schema_filename";
 }
 
 sub stop {
@@ -307,6 +352,10 @@ Starts mysqld.
 =head2 stop
 
 Stops mysqld.
+
+=head2 run_sql
+
+Passes SQL commands from specified filenames to the STDIN of C<mysql>.
 
 =head2 setup
 
