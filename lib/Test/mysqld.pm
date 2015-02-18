@@ -19,7 +19,7 @@ our $errstr;
 our @SEARCH_PATHS = qw(/usr/local/mysql);
 
 my %Defaults = (
-    auto_start       => 3,
+    auto_start       => 2,
     base_dir         => undef,
     my_cnf           => {},
     mysql_install_db => undef,
@@ -72,8 +72,6 @@ sub new {
         $self->setup
             if $self->auto_start >= 2;
         $self->start;
-        $self->run_sql
-            if $self->auto_start >= 3;
     }
     $self;
 }
@@ -134,6 +132,7 @@ sub start {
         $dbh->do('CREATE DATABASE IF NOT EXISTS test')
             or die $dbh->errstr;
     }
+    $self->run_sql;
 }
 
 sub run_sql {
