@@ -6,7 +6,6 @@ all_from 'lib/Test/mysqld.pm';
 
 requires 'Class::Accessor::Lite';
 requires 'File::Copy::Recursive';
-requires 'Path::Tiny';
 test_requires 'DBI';
 test_requires 'DBD::mysql';
 test_requires 'Test::SharedFork' => 0.06;

@@ -9,7 +9,6 @@ use Cwd;
 use DBI;
 use File::Copy::Recursive qw(dircopy);
 use File::Temp qw(tempdir);
-use Path::Tiny qw(path);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
 
@@ -161,19 +160,21 @@ sub _run_sql_command {
         "--user=$user",
     );
 
-    my $pid = open my $mysql_input_fh, '|-';
-    defined $pid || die "Can't fork: $!";
+    open my($schema_fh), '<', $schema_filename
+        or die "Cannot read from $schema_filename";
 
+    my $pid = fork;
     if ($pid) {
-        binmode $mysql_input_fh, ':utf8';
-        print $mysql_input_fh path($schema_filename)->slurp_utf8;
-        close $mysql_input_fh;
         waitpid $pid, 0;
     }
     else {
+        my $fileno = fileno $schema_fh;
+        open STDIN, "<&$fileno"
+            or die "Cannot send $schema_filename to mysql";
         exec @command or die "Can't exec mysql: $!";
     }
 
+    close $schema_fh or die "Cannot close $schema_filename";
 }
 
 sub stop {
