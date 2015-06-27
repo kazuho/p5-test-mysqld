@@ -334,6 +334,15 @@ Test::mysqld - mysqld runner for tests
   my $dbh = DBI->connect(
     $mysqld->dsn(dbname => 'test'),
   );
+  
+  # start_mysqlds is faster than calling Test::mysqld->new twice
+  my @mysqlds = Test::mysqld->start_mysqlds(
+    2,
+    my_cnf => {
+      'skip-networking' => '', # no TCP socket
+    }
+  ) or plan skip_all => $Test::mysqld::errstr;
+  Test::mysqlds->stop_mysqlds(@mysqlds);
 
 =head1 DESCRIPTION
 
