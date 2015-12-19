@@ -11,6 +11,7 @@ use File::Copy::Recursive qw(dircopy);
 use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
+use version;
 
 our $VERSION = '0.17';
 
@@ -21,8 +22,9 @@ my %Defaults = (
     auto_start       => 2,
     base_dir         => undef,
     my_cnf           => {},
-    mysql_install_db => undef,
     mysqld           => undef,
+    mysqld_version   => undef,
+    mysql_install_db => undef,
     pid              => undef,
     copy_data_from   => undef,
     _owner_pid       => undef,
@@ -54,15 +56,19 @@ sub new {
     $self->my_cnf->{datadir} ||= $self->base_dir . "/var";
     $self->my_cnf->{'pid-file'} ||= $self->base_dir . "/tmp/mysqld.pid";
     $self->my_cnf->{tmpdir} ||= $self->base_dir . "/tmp";
-    if (! defined $self->mysql_install_db) {
-        my $prog = _find_program(qw/mysql_install_db bin scripts/)
-            or return;
-        $self->mysql_install_db($prog);
-    }
     if (! defined $self->mysqld) {
         my $prog = _find_program(qw/mysqld bin libexec sbin/)
             or return;
         $self->mysqld($prog);
+    }
+    if (! defined $self->mysqld_version) {
+        my $version = $self->_detect_mysqld_version();
+        $self->mysqld_version($version);
+    }
+    if (! defined $self->mysql_install_db) {
+        my $prog = _find_program(qw/mysql_install_db bin scripts/)
+            or return;
+        $self->mysql_install_db($prog);
     }
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
@@ -154,14 +160,6 @@ sub setup {
     for my $subdir (qw/etc var tmp/) {
         mkdir $self->base_dir . "/$subdir";
     }
-    # copy data files
-    if ($self->copy_data_from) {
-        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
-            or die(
-                "could not dircopy @{[$self->copy_data_from]} to "
-                    . "@{[$self->my_cnf->{datadir}]}:$!"
-                );
-    }
     # my.cnf
     open my $fh, '>', $self->base_dir . '/etc/my.cnf'
         or die "failed to create file:" . $self->base_dir . "/etc/my.cnf:$!";
@@ -175,18 +173,24 @@ sub setup {
     close $fh;
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
-        my $cmd = $self->mysql_install_db;
+        my $use_mysqld_initialize = $self->mysqld_version >= qv(5.7.0);
+        my $cmd = $use_mysqld_initialize ? $self->mysqld : $self->mysql_install_db;
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
-        my $mysql_base_dir = $self->mysql_install_db;
-        if (-l $mysql_base_dir) {
-            require File::Spec;
-            require File::Basename;
-            my $base = File::Basename::dirname($mysql_base_dir);
-            $mysql_base_dir = File::Spec->rel2abs(readlink($mysql_base_dir), $base);
+        if ($use_mysqld_initialize) {
+            $cmd .= ' --initialize-insecure';
         }
-        if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
-            $cmd .= " --basedir='$mysql_base_dir'";
+        else {
+            my $mysql_base_dir = $self->mysql_install_db;
+            if (-l $mysql_base_dir) {
+                require File::Spec;
+                require File::Basename;
+                my $base = File::Basename::dirname($mysql_base_dir);
+                $mysql_base_dir = File::Spec->rel2abs(readlink($mysql_base_dir), $base);
+            }
+            if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
+                $cmd .= " --basedir='$mysql_base_dir'";
+            }
         }
         $cmd .= " 2>&1";
         open $fh, '-|', $cmd
@@ -197,6 +201,14 @@ sub setup {
         }
         close $fh
             or die "*** mysql_install_db failed ***\n$output\n";
+    }
+    # copy data files
+    if ($self->copy_data_from) {
+        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
+            or die(
+                "could not dircopy @{[$self->copy_data_from]} to "
+                    . "@{[$self->my_cnf->{datadir}]}:$!"
+                );
     }
 }
 
@@ -226,6 +238,15 @@ sub _find_program {
         }
     }
     $errstr = "could not find $prog, please set appropriate PATH";
+    return;
+}
+
+sub _detect_mysqld_version {
+    my $self = shift;
+
+    my $mysqld = $self->mysqld;
+    my $ret = `$mysqld --version`;
+    return qv($1) if $ret =~ /Ver\s+(\S+)/;
     return;
 }
 
