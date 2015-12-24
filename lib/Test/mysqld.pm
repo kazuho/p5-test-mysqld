@@ -65,11 +65,6 @@ sub new {
         my $version = $self->_detect_mysqld_version();
         $self->mysqld_version($version);
     }
-    if (! defined $self->mysql_install_db) {
-        my $prog = _find_program(qw/mysql_install_db bin scripts/)
-            or return;
-        $self->mysql_install_db($prog);
-    }
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
             if -e $self->my_cnf->{'pid-file'};
@@ -173,10 +168,14 @@ sub setup {
     close $fh;
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
-        my $use_mysqld_initialize = $self->mysqld_version >= qv(5.7.0);
-        my $cmd = $use_mysqld_initialize ? $self->mysqld : $self->mysql_install_db;
+        my $use_mysqld_initialize = $self->mysqld_version >= qv(5.7.0) && !defined $self->mysql_install_db;
+        my $cmd = $use_mysqld_initialize ? $self->mysqld
+                : defined $self->mysql_install_db ? $self->mysql_install_db
+                : _find_program(qw/mysql_install_db bin scripts/) || die 'failed to find mysql_install_db';
+
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
+
         if ($use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
         }
