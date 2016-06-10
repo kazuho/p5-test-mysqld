@@ -11,7 +11,6 @@ use File::Copy::Recursive qw(dircopy);
 use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
-use version;
 
 our $VERSION = '0.17';
 
@@ -19,15 +18,15 @@ our $errstr;
 our @SEARCH_PATHS = qw(/usr/local/mysql);
 
 my %Defaults = (
-    auto_start       => 2,
-    base_dir         => undef,
-    my_cnf           => {},
-    mysqld           => undef,
-    mysqld_version   => undef,
-    mysql_install_db => undef,
-    pid              => undef,
-    copy_data_from   => undef,
-    _owner_pid       => undef,
+    auto_start            => 2,
+    base_dir              => undef,
+    my_cnf                => {},
+    mysqld                => undef,
+    use_mysqld_initialize => undef,
+    mysql_install_db      => undef,
+    pid                   => undef,
+    copy_data_from        => undef,
+    _owner_pid            => undef,
 );
 
 Class::Accessor::Lite->mk_accessors(keys %Defaults);
@@ -61,10 +60,11 @@ sub new {
             or return;
         $self->mysqld($prog);
     }
-    if (! defined $self->mysqld_version) {
-        my $version = $self->_detect_mysqld_version();
-        $self->mysqld_version($version);
+    if (! defined $self->use_mysqld_initialize) {
+        my $supported = $self->_use_mysqld_initialize;
+        $self->use_mysqld_initialize($supported);
     }
+    warn sprintf "use_mysqld_initialize: %s\n", $self->use_mysqld_initialize;
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
             if -e $self->my_cnf->{'pid-file'};
@@ -168,15 +168,14 @@ sub setup {
     close $fh;
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
-        my $use_mysqld_initialize = $self->mysqld_version >= qv(5.7.0) && !defined $self->mysql_install_db;
-        my $cmd = $use_mysqld_initialize ? $self->mysqld
+        my $cmd = $self->use_mysqld_initialize ? $self->mysqld
                 : defined $self->mysql_install_db ? $self->mysql_install_db
                 : _find_program(qw/mysql_install_db bin scripts/) || die 'failed to find mysql_install_db';
 
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
 
-        if ($use_mysqld_initialize) {
+        if ($self->use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
         }
         else {
@@ -240,12 +239,18 @@ sub _find_program {
     return;
 }
 
-sub _detect_mysqld_version {
+sub _use_mysqld_initialize {
     my $self = shift;
 
     my $mysqld = $self->mysqld;
-    my $ret = `$mysqld --version`;
-    return qv($1) if $ret =~ /Ver\s+(\S+)/;
+    my $ret = `$mysqld --verbose --help`;
+    return $self->_parse_mysqld_verbose_help($ret);
+}
+
+sub _parse_mysqld_verbose_help{
+    my $self = shift;
+    my $str  = shift;
+    return 1 if $str =~ /^initialize-insecure\s+FALSE$/m;
     return;
 }
 
