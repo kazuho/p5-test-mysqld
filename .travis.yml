@@ -1,0 +1,35 @@
+language: perl
+perl:
+    - 5.14
+    - 5.20
+    - 5.22
+env:
+  - "DATABASE_ADAPTER=mysql-5.5"
+  - "DATABASE_ADAPTER=mysql-5.6"
+  - "DATABASE_ADAPTER=mysql-5.7-dmr"
+  - "DATABASE_ADAPTER=mariadb-10.0"
+before_install:
+  - "sudo apt-get update -qq"
+  - if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-5\.[67]) ]] ;
+    then
+      sudo service mysql stop ;
+      sudo apt-get install python-software-properties ;
+      if [[ $DATABASE_ADAPTER =~ mariadb ]] ;
+      then
+        sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db ;
+        sudo add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.0/ubuntu precise main' ;
+        sudo apt-get update ;
+        sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mariadb-server ;
+        sudo apt-get install libmariadbd-dev ;
+      else
+        echo mysql-apt-config mysql-apt-config/enable-repo select $DATABASE_ADAPTER | sudo debconf-set-selections ;
+        wget http://dev.mysql.com/get/mysql-apt-config_0.2.1-1ubuntu12.04_all.deb ;
+        sudo dpkg --install mysql-apt-config_0.2.1-1ubuntu12.04_all.deb ;
+        sudo apt-get update -q ;
+        sudo apt-get install -q -y -o Dpkg::Options::=--force-confnew mysql-server ;
+      fi
+    fi
+install:
+  - cpanm --installdeps --notest .
+script:
+  - prove -lv
