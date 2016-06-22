@@ -175,18 +175,28 @@ sub setup {
     close $fh;
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
-        my $cmd = $self->mysql_install_db;
-        # We should specify --defaults-file option first.
-        $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
-        my $mysql_base_dir = $self->mysql_install_db;
-        if (-l $mysql_base_dir) {
-            require File::Spec;
-            require File::Basename;
-            my $base = File::Basename::dirname($mysql_base_dir);
-            $mysql_base_dir = File::Spec->rel2abs(readlink($mysql_base_dir), $base);
-        }
-        if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
-            $cmd .= " --basedir='$mysql_base_dir'";
+        my $cmd;
+        if ($self->_use_initialize) {
+            $cmd = $self->mysqld;
+            # We should specify --defaults-file option first.
+            $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
+            $cmd .= " --basedir='" . $self->base_dir . "'";
+            $cmd .= " --datadir='" . $self->base_dir . "/var'";
+            # must be last!
+            $cmd .= " --initialize-insecure";
+        } else {
+            $cmd = $self->mysql_install_db;
+            $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
+            my $mysql_base_dir = $self->mysql_install_db;
+            if (-l $mysql_base_dir) {
+                require File::Spec;
+                require File::Basename;
+                my $base = File::Basename::dirname($mysql_base_dir);
+                $mysql_base_dir = File::Spec->rel2abs(readlink($mysql_base_dir), $base);
+            }
+            if ($mysql_base_dir =~ s|/[^/]+/mysql_install_db$||) {
+                $cmd .= " --basedir='$mysql_base_dir'";
+            }
         }
         $cmd .= " 2>&1";
         open $fh, '-|', $cmd
@@ -205,6 +215,34 @@ sub read_log {
     open my $logfh, '<', $self->base_dir . '/tmp/mysqld.log'
         or die "failed to open file:tmp/mysql.log:$!";
     do { local $/; <$logfh> };
+}
+
+sub _use_initialize {
+    my ($self) = @_;
+
+    # Example version strings from mysql and mariadb:
+    # /usr/sbin/mysqld  Ver 5.5.49-0+deb8u1 for debian-linux-gnu on x86_64 ((Debian))
+    # mysqld  Ver 5.7.12-0ubuntu1 for Linux on x86_64 ((Ubuntu))
+    # mysqld  Ver 10.0.25-MariaDB-0ubuntu0.16.04.1 for debian-linux-gnu on x86_64 (Ubuntu 16.04)
+
+    my $version = `${\$self->mysqld} -V`;
+
+    # MariaDB still uses mysql_install_db
+    return 0 if $version =~ /MariaDB/;
+
+    # mysql_install_db is deprecated in mysql 5.7.6+
+    $version =~ /Ver (\d+)\.(\d+)\.(\d+)/;
+    my ($major_ver, $sub_ver, $minor_ver) = ($1,$2,$3);
+    if ($major_ver >= 5) {
+        return 1 if $major_ver > 5;
+        if ($sub_ver >= 7) {
+            return 1 if $sub_ver > 7;
+            if ($minor_ver >= 6) {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 sub _find_program {
