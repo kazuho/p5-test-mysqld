@@ -154,14 +154,6 @@ sub setup {
     for my $subdir (qw/etc var tmp/) {
         mkdir $self->base_dir . "/$subdir";
     }
-    # copy data files
-    if ($self->copy_data_from) {
-        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
-            or die(
-                "could not dircopy @{[$self->copy_data_from]} to "
-                    . "@{[$self->my_cnf->{datadir}]}:$!"
-                );
-    }
     # my.cnf
     open my $fh, '>', $self->base_dir . '/etc/my.cnf'
         or die "failed to create file:" . $self->base_dir . "/etc/my.cnf:$!";
@@ -182,7 +174,6 @@ sub setup {
             $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
             $cmd .= " --basedir='" . $self->base_dir . "'";
             $cmd .= " --datadir='" . $self->base_dir . "/var'";
-            # must be last!
             $cmd .= " --initialize-insecure";
         } else {
             $cmd = $self->mysql_install_db;
@@ -207,6 +198,14 @@ sub setup {
         }
         close $fh
             or die "*** mysql_install_db failed ***\n$output\n";
+    }
+    # copy data files
+    if ($self->copy_data_from) {
+        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
+            or die(
+                "could not dircopy @{[$self->copy_data_from]} to "
+                    . "@{[$self->my_cnf->{datadir}]}:$!"
+                );
     }
 }
 
