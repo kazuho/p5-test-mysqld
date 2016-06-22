@@ -64,6 +64,7 @@ sub new {
             or return;
         $self->mysqld($prog);
     }
+    if ($self->_is_mariadb) { $self->my_cnf->{'skip-grant-tables'} = ''; }
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
             if -e $self->my_cnf->{'pid-file'};
@@ -214,6 +215,15 @@ sub read_log {
     open my $logfh, '<', $self->base_dir . '/tmp/mysqld.log'
         or die "failed to open file:tmp/mysql.log:$!";
     do { local $/; <$logfh> };
+}
+
+sub _is_mariadb {
+    my ($self) = @_;
+
+    my $version = `${\$self->mysqld} -V`;
+
+    return 1 if $version =~ /MariaDB/;
+    return 0;
 }
 
 sub _use_initialize {
