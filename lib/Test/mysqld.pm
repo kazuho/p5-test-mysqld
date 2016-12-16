@@ -154,6 +154,17 @@ sub setup {
     for my $subdir (qw/etc var tmp/) {
         mkdir $self->base_dir . "/$subdir";
     }
+
+    # When using `mysql_install_db`, copy the data before setup db for quick bootstrap.
+    # But `mysqld --initialize-insecure` doesn't work while the data dir exists,
+    # so don't copy here and do after setup db.
+    if (!$self->use_mysqld_initialize && $self->copy_data_from) {
+        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
+            or die(
+                "could not dircopy @{[$self->copy_data_from]} to "
+                    . "@{[$self->my_cnf->{datadir}]}:$!"
+                );
+    }
     # my.cnf
     open my $fh, '>', $self->base_dir . '/etc/my.cnf'
         or die "failed to create file:" . $self->base_dir . "/etc/my.cnf:$!";
@@ -200,7 +211,7 @@ sub setup {
             or die "*** mysql_install_db failed ***\n$output\n";
     }
     # copy data files
-    if ($self->copy_data_from) {
+    if ($self->use_mysqld_initialize && $self->copy_data_from) {
         dircopy($self->copy_data_from, $self->my_cnf->{datadir})
             or die(
                 "could not dircopy @{[$self->copy_data_from]} to "
@@ -238,6 +249,10 @@ sub _find_program {
     return;
 }
 
+# Detecting if the mysqld supports `--initialize-insecure` option or not from the
+# output of `mysqld --help --verbose`.
+# `mysql_install_db` command is obsoleted MySQL 5.7.6 or later and
+# `mysqld --initialize-insecure` should be used.
 sub _use_mysqld_initialize {
     my $self = shift;
 
