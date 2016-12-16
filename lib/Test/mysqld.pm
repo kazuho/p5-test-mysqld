@@ -64,7 +64,6 @@ sub new {
         my $supported = $self->_use_mysqld_initialize;
         $self->use_mysqld_initialize($supported);
     }
-    warn sprintf "use_mysqld_initialize: %s\n", $self->use_mysqld_initialize;
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
             if -e $self->my_cnf->{'pid-file'};
