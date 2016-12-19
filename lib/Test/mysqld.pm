@@ -178,17 +178,21 @@ sub setup {
     close $fh;
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
-        my $cmd = $self->use_mysqld_initialize ? $self->mysqld
-                : defined $self->mysql_install_db ? $self->mysql_install_db
-                : _find_program(qw/mysql_install_db bin scripts/) || die 'failed to find mysql_install_db';
+        my $cmd = $self->use_mysqld_initialize ? $self->mysqld : do {
+            if (! defined $self->mysql_install_db) {
+                my $prog = _find_program(qw/mysql_install_db bin scripts/)
+                    or die 'failed to find mysql_install_db';
+                $self->mysql_install_db($prog);
+            }
+            $self->mysql_install_db;
+        };
 
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
 
         if ($self->use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
-        }
-        else {
+        } else {
             my $mysql_base_dir = $self->mysql_install_db;
             if (-l $mysql_base_dir) {
                 require File::Spec;
