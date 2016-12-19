@@ -1,8 +1,8 @@
 language: perl
 perl:
-    - 5.14
-    - 5.20
-    - 5.22
+    - "5.14"
+    - "5.22"
+    - "5.24"
 env:
   - "DATABASE_ADAPTER=mysql-5.5"
   - "DATABASE_ADAPTER=mysql-5.6"
@@ -32,4 +32,4 @@ before_install:
 install:
   - cpanm --installdeps --notest .
 script:
-  - prove -lv
+  - prove -lvr
