@@ -61,8 +61,7 @@ sub new {
         $self->mysqld($prog);
     }
     if (! defined $self->use_mysqld_initialize) {
-        my $supported = $self->_use_mysqld_initialize;
-        $self->use_mysqld_initialize($supported);
+        $self->use_mysqld_initialize($self->_use_mysqld_initialize);
     }
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
@@ -261,15 +260,7 @@ sub _use_mysqld_initialize {
     my $self = shift;
 
     my $mysqld = $self->mysqld;
-    my $ret = `$mysqld --verbose --help`;
-    return $self->_parse_mysqld_verbose_help($ret);
-}
-
-sub _parse_mysqld_verbose_help{
-    my $self = shift;
-    my $str  = shift;
-    return 1 if $str =~ /^initialize-insecure\s+FALSE$/m;
-    return;
+    `$mysqld --verbose --help` =~ /--initialize-insecure/ms;
 }
 
 sub _get_path_of {
