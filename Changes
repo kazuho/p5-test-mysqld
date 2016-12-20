@@ -1,5 +1,7 @@
 Revision history for Perl extension Test::mysqld.
 
+{{$NEXT}}
+
 0.17
 	- introduce "copy_data_from", to start-up MySQL with prefilled tables
 	- add "read_log" function that returns the contents of mysqld log
