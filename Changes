@@ -1,6 +1,7 @@
 Revision history for Perl extension Test::mysqld.
 
-0.18
+{{$NEXT}}
+
 	- add impl of Test::mysqld::Multi (shogo82148)
 	- support MySQL 5.7.6 or later (karupanerura ywatase)
 
