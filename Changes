@@ -2,6 +2,10 @@ Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
 
+0.20 2016-12-20T07:30:45Z
+
+	- fix dist name
+
 0.18 2016-12-20T06:28:12Z
 
 	- add impl of Test::mysqld::Multi (shogo82148)

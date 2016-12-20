@@ -1,4 +1,4 @@
-name = "test-mysqld"
+name = "Test-mysqld"
 badges = ["travis"]
 authority="cpan:KAZUHO"
 
