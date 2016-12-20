@@ -97,6 +97,14 @@ sub start {
     my $self = shift;
     return
         if defined $self->pid;
+    $self->spawn;
+    $self->wait_for_setup;
+}
+
+sub spawn {
+    my $self = shift;
+    return
+        if defined $self->pid;
     open my $logfh, '>>', $self->base_dir . '/tmp/mysqld.log'
         or die 'failed to create log file:' . $self->base_dir
             . "/tmp/mysqld.log:$!";
@@ -116,13 +124,20 @@ sub start {
         die "failed to launch mysqld:$?";
     }
     close $logfh;
+    $self->pid($pid);
+}
+
+sub wait_for_setup {
+    my $self = shift;
+    return
+        unless defined $self->pid;
+    my $pid = $self->pid;
     while (! -e $self->my_cnf->{'pid-file'}) {
         if (waitpid($pid, WNOHANG) > 0) {
             die "*** failed to launch mysqld ***\n" . $self->read_log;
         }
         sleep 0.1;
     }
-    $self->pid($pid);
     { # create 'test' database
         my $dbh = DBI->connect($self->dsn(dbname => 'mysql'))
             or die $DBI::errstr;
@@ -134,11 +149,24 @@ sub start {
 sub stop {
     my ($self, $sig) = @_;
 
-    local $?; # waitpid may change this value :/
+    return
+        unless defined $self->pid;
+    $sig ||= SIGTERM;
+    $self->send_stop_signal($sig);
+    $self->wait_for_stop;
+}
+
+sub send_stop_signal {
+    my ($self, $sig) = @_;
     return
         unless defined $self->pid;
     $sig ||= SIGTERM;
     kill $sig, $self->pid;
+}
+
+sub wait_for_stop {
+    my $self = shift;
+    local $?; # waitpid may change this value :/
     while (waitpid($self->pid, 0) <= 0) {
     }
     $self->pid(undef);
@@ -273,6 +301,35 @@ sub _get_path_of {
     $path;
 }
 
+sub start_mysqlds {
+    my $class = shift;
+    my $number = shift;
+    my @args = @_;
+
+    my @mysqlds = map { Test::mysqld->new(@args, auto_start => 0) } (1..$number);
+    for my $mysqld (@mysqlds) {
+        $mysqld->setup;
+        $mysqld->spawn;
+    }
+    for my $mysqld (@mysqlds) {
+        $mysqld->wait_for_setup;
+    }
+    return @mysqlds;
+}
+
+sub stop_mysqlds {
+    my $class = shift;
+    my @mysqlds = @_;
+
+    for my $mysqld (@mysqlds) {
+        $mysqld->send_stop_signal;
+    }
+    for my $mysqld (@mysqlds) {
+        $mysqld->wait_for_stop;
+    }
+    return @mysqlds;
+}
+
 "lestrrat-san he";
 __END__
 
@@ -297,6 +354,15 @@ Test::mysqld - mysqld runner for tests
   my $dbh = DBI->connect(
     $mysqld->dsn(dbname => 'test'),
   );
+  
+  # start_mysqlds is faster than calling Test::mysqld->new twice
+  my @mysqlds = Test::mysqld->start_mysqlds(
+    2,
+    my_cnf => {
+      'skip-networking' => '', # no TCP socket
+    }
+  ) or plan skip_all => $Test::mysqld::errstr;
+  Test::mysqlds->stop_mysqlds(@mysqlds);
 
 =head1 DESCRIPTION
 
@@ -349,6 +415,14 @@ Setups the mysqld instance.
 =head2 read_log
 
 Returns the contents of the mysqld log file.
+
+=head2 start_mysqlds
+
+Create and run some mysqld instances, and return a list of C<Test::mysqld>.
+
+=head2 stop_mysqlds
+
+Stop some mysqld instances.
 
 =head1 COPYRIGHT
 
