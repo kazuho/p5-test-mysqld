@@ -1,5 +1,9 @@
 Revision history for Perl extension Test::mysqld.
 
+0.18
+	- add impl of Test::mysqld::Multi (shogo82148)
+	- support MySQL 5.7.6 or later (karupanerura ywatase)
+
 0.17
 	- introduce "copy_data_from", to start-up MySQL with prefilled tables
 	- add "read_log" function that returns the contents of mysqld log
