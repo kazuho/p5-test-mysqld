@@ -4,7 +4,6 @@ use warnings;
 use DBI;
 use Test::More;
 use Test::mysqld;
-use Test::SharedFork;
 
 my $mysqld = Test::mysqld->new(
     auto_start     => undef,

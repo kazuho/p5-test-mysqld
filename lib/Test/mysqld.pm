@@ -61,10 +61,8 @@ sub new {
         $self->mysqld($prog);
     }
     if (! defined $self->use_mysqld_initialize) {
-        my $supported = $self->_use_mysqld_initialize;
-        $self->use_mysqld_initialize($supported);
+        $self->use_mysqld_initialize($self->_use_mysqld_initialize);
     }
-    warn sprintf "use_mysqld_initialize: %s\n", $self->use_mysqld_initialize;
     if ($self->auto_start) {
         die 'mysqld is already running (' . $self->my_cnf->{'pid-file'} . ')'
             if -e $self->my_cnf->{'pid-file'};
@@ -155,6 +153,17 @@ sub setup {
     for my $subdir (qw/etc var tmp/) {
         mkdir $self->base_dir . "/$subdir";
     }
+
+    # When using `mysql_install_db`, copy the data before setup db for quick bootstrap.
+    # But `mysqld --initialize-insecure` doesn't work while the data dir exists,
+    # so don't copy here and do after setup db.
+    if (!$self->use_mysqld_initialize && $self->copy_data_from) {
+        dircopy($self->copy_data_from, $self->my_cnf->{datadir})
+            or die(
+                "could not dircopy @{[$self->copy_data_from]} to "
+                    . "@{[$self->my_cnf->{datadir}]}:$!"
+                );
+    }
     # my.cnf
     open my $fh, '>', $self->base_dir . '/etc/my.cnf'
         or die "failed to create file:" . $self->base_dir . "/etc/my.cnf:$!";
@@ -168,17 +177,21 @@ sub setup {
     close $fh;
     # mysql_install_db
     if (! -d $self->base_dir . '/var/mysql') {
-        my $cmd = $self->use_mysqld_initialize ? $self->mysqld
-                : defined $self->mysql_install_db ? $self->mysql_install_db
-                : _find_program(qw/mysql_install_db bin scripts/) || die 'failed to find mysql_install_db';
+        my $cmd = $self->use_mysqld_initialize ? $self->mysqld : do {
+            if (! defined $self->mysql_install_db) {
+                my $prog = _find_program(qw/mysql_install_db bin scripts/)
+                    or die 'failed to find mysql_install_db';
+                $self->mysql_install_db($prog);
+            }
+            $self->mysql_install_db;
+        };
 
         # We should specify --defaults-file option first.
         $cmd .= " --defaults-file='" . $self->base_dir . "/etc/my.cnf'";
 
         if ($self->use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
-        }
-        else {
+        } else {
             my $mysql_base_dir = $self->mysql_install_db;
             if (-l $mysql_base_dir) {
                 require File::Spec;
@@ -201,7 +214,7 @@ sub setup {
             or die "*** mysql_install_db failed ***\n$output\n";
     }
     # copy data files
-    if ($self->copy_data_from) {
+    if ($self->use_mysqld_initialize && $self->copy_data_from) {
         dircopy($self->copy_data_from, $self->my_cnf->{datadir})
             or die(
                 "could not dircopy @{[$self->copy_data_from]} to "
@@ -239,19 +252,15 @@ sub _find_program {
     return;
 }
 
+# Detecting if the mysqld supports `--initialize-insecure` option or not from the
+# output of `mysqld --help --verbose`.
+# `mysql_install_db` command is obsoleted MySQL 5.7.6 or later and
+# `mysqld --initialize-insecure` should be used.
 sub _use_mysqld_initialize {
     my $self = shift;
 
     my $mysqld = $self->mysqld;
-    my $ret = `$mysqld --verbose --help`;
-    return $self->_parse_mysqld_verbose_help($ret);
-}
-
-sub _parse_mysqld_verbose_help{
-    my $self = shift;
-    my $str  = shift;
-    return 1 if $str =~ /^initialize-insecure\s+FALSE$/m;
-    return;
+    `$mysqld --verbose --help` =~ /--initialize-insecure/ms;
 }
 
 sub _get_path_of {
