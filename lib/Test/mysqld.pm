@@ -288,7 +288,7 @@ sub _use_mysqld_initialize {
     my $self = shift;
 
     my $mysqld = $self->mysqld;
-    `$mysqld --verbose --help` =~ /--initialize-insecure/ms;
+    `$mysqld --verbose --help 2>/dev/null` =~ /--initialize-insecure/ms;
 }
 
 sub _get_path_of {
