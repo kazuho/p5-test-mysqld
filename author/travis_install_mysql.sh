@@ -11,9 +11,12 @@ if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-5\.[67]) ]]; then
     sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mariadb-server
     sudo apt-get install libmariadbd-dev
   else
-    echo mysql-apt-config mysql-apt-config/select-server select $DATABASE_ADAPTER | sudo debconf-set-selections
-    wget http://dev.mysql.com/get/mysql-apt-config_0.2.1-1ubuntu12.04_all.deb
-    sudo dpkg --install mysql-apt-config_0.2.1-1ubuntu12.04_all.deb
+    cat <<EOC | sudo debconf-set-selections
+mysql-apt-config mysql-apt-config/select-server select $DATABASE_ADAPTER
+mysql-apt-config mysql-apt-config/repo-distro   select  ubuntu
+EOC
+    wget https://dev.mysql.com/get/mysql-apt-config_0.8.4-1_all.deb
+    sudo dpkg --install mysql-apt-config_0.8.4-1_all.deb
     sudo apt-get update -q
     sudo apt-get install -q -y -o Dpkg::Options::=--force-confnew mysql-server
   fi
