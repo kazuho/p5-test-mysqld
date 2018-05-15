@@ -22,7 +22,7 @@ EOC
   else
     # 5.5
     sudo apt-get update -q
-    sudo rm -f /var/lib/mysql/debian-*.flag # for downgrade
+    sudo rm -rf /var/lib/mysql/debian-5.6.flag # for downgrade
     sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mysql-server-5.5 mysql-client-5.5 mysql-server-core-5.5
   fi
   sudo mysql_upgrade
