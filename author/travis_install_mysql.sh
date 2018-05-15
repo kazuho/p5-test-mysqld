@@ -10,7 +10,7 @@ if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-5\.[567]) ]]; then
     sudo apt-get update
     sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mariadb-server
     sudo apt-get install libmariadbd-dev
-  else
+  elif [[ $DATABASE_ADAPTER =~ mysql-5\.[67] ]]; then
     cat <<EOC | sudo debconf-set-selections
 mysql-apt-config mysql-apt-config/select-server select $DATABASE_ADAPTER
 mysql-apt-config mysql-apt-config/repo-distro   select  ubuntu
@@ -19,6 +19,9 @@ EOC
     sudo dpkg --install mysql-apt-config_0.8.4-1_all.deb
     sudo apt-get update -q
     sudo apt-get install -q -y -o Dpkg::Options::=--force-confnew mysql-server
+  else
+    # 5.5
+    sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mysql55-server
   fi
   sudo mysql_upgrade
 fi
