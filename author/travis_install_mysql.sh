@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-5\.[67]) ]]; then
+if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-5\.[567]) ]]; then
   sudo service mysql stop
   sudo apt-get install python-software-properties
   if [[ $DATABASE_ADAPTER =~ mariadb ]]; then
