@@ -22,7 +22,7 @@ EOC
   else
     # 5.5
     sudo apt-get update -q
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mysql55-server
+    sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mysql-server-5.5
   fi
   sudo mysql_upgrade
 fi
