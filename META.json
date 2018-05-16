@@ -4,7 +4,7 @@
       "Cybozu Labs, Inc.  Written by Kazuho Oku."
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.10, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Minilla/v3.1.0, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -52,7 +52,7 @@
          "requires" : {
             "Class::Accessor::Lite" : "0",
             "File::Copy::Recursive" : "0",
-            "perl" : "5.008"
+            "perl" : "5.008001"
          }
       }
    },
@@ -68,22 +68,24 @@
          "web" : "https://github.com/kazuho/p5-test-mysqld"
       }
    },
-   "version" : "0.21",
+   "version" : "0.22",
    "x_authority" : "cpan:KAZUHO",
    "x_contributors" : [
-      "Kazuho Oku <kazuho@li1.kazuhooku.com>",
-      "hiratara <hiratara@cpan.org>",
-      "lestrrat <lestrrat+github@gmail.com>",
-      "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
+      "David Steinbrunner <dsteinbrunner@pobox.com>",
+      "FUJIWARA Shunichiro <fujiwara.shunichiro@gmail.com>",
+      "HIROSE Masaaki <hirose31@gmail.com>",
+      "Ichinose Shogo <shogo82148@gmail.com>",
       "Jason Galea <jason@lecstor.com>",
       "John Napiorkowski <jjn1056@yahoo.com>",
-      "David Steinbrunner <dsteinbrunner@pobox.com>",
-      "Ichinose Shogo <shogo82148@gmail.com>",
-      "karupanerura <karupa@cpan.org>",
-      "Yusuke Watase <ywatase@gmail.com>",
+      "Kazuho Oku <kazuho@li1.kazuhooku.com>",
       "Kazuho Oku <kazuhooku@gmail.com>",
-      "HIROSE Masaaki <hirose31@gmail.com>",
-      "Masayuki Matsuki <y.songmu@gmail.com>"
+      "Masayuki Matsuki <y.songmu@gmail.com>",
+      "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
+      "Yusuke Watase <ywatase@gmail.com>",
+      "hiratara <hiratara@cpan.org>",
+      "karupanerura <karupa@cpan.org>",
+      "lestrrat <lestrrat+github@gmail.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27300"
+   "x_serialization_backend" : "JSON::PP version 2.27400_02",
+   "x_static_install" : 1
 }

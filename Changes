@@ -2,6 +2,9 @@ Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
 
+0.22 2018-05-16T15:05:22Z
+    - Fix basedir detection on Amazon Linux (fujiwara)
+
 0.21 2017-04-13T04:50:01Z
 	- Suppress noisy warnings (hirose31)
 
