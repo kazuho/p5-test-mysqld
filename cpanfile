@@ -1,10 +1,15 @@
 requires 'Class::Accessor::Lite';
+requires 'DBD::mysql';
+requires 'DBI';
 requires 'File::Copy::Recursive';
-requires 'perl', '5.008';
+requires 'File::Temp';
+requires 'perl', '5.008_001';
 
-on build => sub {
-    requires 'DBD::mysql';
-    requires 'DBI';
-    requires 'ExtUtils::MakeMaker', '6.59';
-    requires 'Test::SharedFork', '0.06';
+on configure => sub {
+    requires 'Module::Build::Tiny', '0.035';
+};
+
+on test => sub {
+    requires 'Test::More';
+    requires 'Test::SharedFork';
 };

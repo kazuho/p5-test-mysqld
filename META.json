@@ -26,14 +26,6 @@
       ]
    },
    "prereqs" : {
-      "build" : {
-         "requires" : {
-            "DBD::mysql" : "0",
-            "DBI" : "0",
-            "ExtUtils::MakeMaker" : "6.59",
-            "Test::SharedFork" : "0.06"
-         }
-      },
       "configure" : {
          "requires" : {
             "Module::Build::Tiny" : "0.035"
@@ -51,8 +43,17 @@
       "runtime" : {
          "requires" : {
             "Class::Accessor::Lite" : "0",
+            "DBD::mysql" : "0",
+            "DBI" : "0",
             "File::Copy::Recursive" : "0",
+            "File::Temp" : "0",
             "perl" : "5.008001"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::More" : "0",
+            "Test::SharedFork" : "0"
          }
       }
    },
@@ -68,7 +69,7 @@
          "web" : "https://github.com/kazuho/p5-test-mysqld"
       }
    },
-   "version" : "0.22",
+   "version" : "1.0000",
    "x_authority" : "cpan:KAZUHO",
    "x_contributors" : [
       "David Steinbrunner <dsteinbrunner@pobox.com>",
@@ -79,8 +80,8 @@
       "John Napiorkowski <jjn1056@yahoo.com>",
       "Kazuho Oku <kazuho@li1.kazuhooku.com>",
       "Kazuho Oku <kazuhooku@gmail.com>",
-      "Masayuki Matsuki <y.songmu@gmail.com>",
       "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
+      "Songmu <y.songmu@gmail.com>",
       "Yusuke Watase <ywatase@gmail.com>",
       "hiratara <hiratara@cpan.org>",
       "karupanerura <karupa@cpan.org>",

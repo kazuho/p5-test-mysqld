@@ -2,6 +2,10 @@ Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
 
+1.0000 2018-05-16T15:21:49Z
+	- This be 1.0!
+	- Fix deps
+
 0.22 2018-05-16T15:05:22Z
 	- Fix basedir detection on Amazon Linux (fujiwara)
 
