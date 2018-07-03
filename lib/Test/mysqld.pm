@@ -225,9 +225,9 @@ sub setup {
                 require File::Spec;
                 require File::Basename;
                 my $base = File::Basename::dirname($mysql_base_dir);
-                $mysql_base_dir = File::Spec->rel2abs(readlink($mysql_base_dir), $base);
+                $mysql_base_dir = Cwd::abs_path(File::Spec->rel2abs(readlink($mysql_base_dir), $base));
             }
-            if ($mysql_base_dir =~ s{/(?:bin|extra)/mysql_install_db$}{}) {
+            if ($mysql_base_dir =~ s{/(?:bin|extra|scripts)/mysql_install_db$}{}) {
                 $cmd .= " --basedir='$mysql_base_dir'";
             }
         }
