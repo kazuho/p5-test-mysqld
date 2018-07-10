@@ -1,6 +1,9 @@
 Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
+	- for MySQL 8, always `DROP DATABASE IF EXISTS test` explicitly on setup (Songmu)
+	- use Cwd::abs_path instead of using File::Spec and readlink (Songmu)
+	- Fix basedir detection on mac (AngeldsWang)
 
 1.0000 2018-05-16T15:21:49Z
 	- This be 1.0!
