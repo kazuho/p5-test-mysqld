@@ -220,13 +220,8 @@ sub setup {
         if ($self->use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
         } else {
-            my $mysql_base_dir = $self->mysql_install_db;
-            if (-l $mysql_base_dir) {
-                require File::Spec;
-                require File::Basename;
-                my $base = File::Basename::dirname($mysql_base_dir);
-                $mysql_base_dir = File::Spec->rel2abs(readlink($mysql_base_dir), $base);
-            }
+            # `abs_path` resolves nested symlinks and returns canonical absolute path
+            my $mysql_base_dir = Cwd::abs_path($self->mysql_install_db);
             if ($mysql_base_dir =~ s{/(?:bin|extra|scripts)/mysql_install_db$}{}) {
                 $cmd .= " --basedir='$mysql_base_dir'";
             }
