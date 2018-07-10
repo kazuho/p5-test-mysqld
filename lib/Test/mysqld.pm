@@ -220,8 +220,8 @@ sub setup {
         if ($self->use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
         } else {
-            # `realpath` resolves nested symlinks and returns canonical absolute path
-            my $mysql_base_dir = realpath($self->mysql_install_db);
+            # `abs_path` resolves nested symlinks and returns canonical absolute path
+            my $mysql_base_dir = Cwd::abs_path($self->mysql_install_db);
             if ($mysql_base_dir =~ s{/(?:bin|extra|scripts)/mysql_install_db$}{}) {
                 $cmd .= " --basedir='$mysql_base_dir'";
             }
