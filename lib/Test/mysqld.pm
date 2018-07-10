@@ -138,12 +138,20 @@ sub wait_for_setup {
         }
         sleep 0.1;
     }
-    { # create 'test' database
+
+    unless ($self->copy_data_from) { # create 'test' database
         my $dbh = DBI->connect($self->dsn(dbname => 'mysql'))
             or die $DBI::errstr;
+        # This 'DROP DATABASE' is only for MySQL8 or later.
+        # MySQL8 or later has "test" database by default and
+        # if `DROP DATABASE` is not done beforehand, `CREATE DATABASE` fails
+        # for some reason on MySQL8 even if `IF NOT EXISTS` notation is there.
+        $dbh->do('DROP DATABASE IF EXISTS test')
+            or die $dbh->errstr;
         $dbh->do('CREATE DATABASE IF NOT EXISTS test')
             or die $dbh->errstr;
     }
+    # XXX copy_data_from doesn't work on MySQL8
 }
 
 sub stop {
