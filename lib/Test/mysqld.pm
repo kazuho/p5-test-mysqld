@@ -247,7 +247,7 @@ sub setup {
             $output .= $l;
         }
         close $fh
-            or die "*** mysql_install_db failed ***\n$output\n";
+            or die "*** mysql_install_db failed ***\n% $cmd\n$output\n";
     }
 }
 
