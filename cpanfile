@@ -13,3 +13,7 @@ on test => sub {
     requires 'Test::More';
     requires 'Test::SharedFork';
 };
+
+on develop => sub {
+    requires 'Pod::Markdown::Github';
+};

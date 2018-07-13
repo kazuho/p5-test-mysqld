@@ -5,30 +5,32 @@ Test::mysqld - mysqld runner for tests
 
 # SYNOPSIS
 
-    use DBI;
-    use Test::mysqld;
-    use Test::More;
-    
-    my $mysqld = Test::mysqld->new(
-      my_cnf => {
-        'skip-networking' => '', # no TCP socket
-      }
-    ) or plan skip_all => $Test::mysqld::errstr;
-    
-    plan tests => XXX;
-    
-    my $dbh = DBI->connect(
-      $mysqld->dsn(dbname => 'test'),
-    );
-    
-    # start_mysqlds is faster than calling Test::mysqld->new twice
-    my @mysqlds = Test::mysqld->start_mysqlds(
-      2,
-      my_cnf => {
-        'skip-networking' => '', # no TCP socket
-      }
-    ) or plan skip_all => $Test::mysqld::errstr;
-    Test::mysqlds->stop_mysqlds(@mysqlds);
+```perl
+use DBI;
+use Test::mysqld;
+use Test::More;
+
+my $mysqld = Test::mysqld->new(
+  my_cnf => {
+    'skip-networking' => '', # no TCP socket
+  }
+) or plan skip_all => $Test::mysqld::errstr;
+
+plan tests => XXX;
+
+my $dbh = DBI->connect(
+  $mysqld->dsn(dbname => 'test'),
+);
+
+# start_mysqlds is faster than calling Test::mysqld->new twice
+my @mysqlds = Test::mysqld->start_mysqlds(
+  2,
+  my_cnf => {
+    'skip-networking' => '', # no TCP socket
+  }
+) or plan skip_all => $Test::mysqld::errstr;
+Test::mysqlds->stop_mysqlds(@mysqlds);
+```
 
 # DESCRIPTION
 

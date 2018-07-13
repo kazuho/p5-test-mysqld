@@ -3,4 +3,4 @@ badges = ["travis"]
 authority="cpan:KAZUHO"
 
 module_maker="ModuleBuildTiny"
-
+markdown_maker = "Pod::Markdown::Github"
