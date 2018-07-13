@@ -2,6 +2,10 @@ Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
 
+1.0011 2018-07-13T09:05:49Z
+    - `DROP DATABASE` is not needed on setup even if MySQL 8
+    -  [refactoring] apply --ignore-db-dir option when --initialize
+
 1.0010 2018-07-10T08:46:20Z
 	- for MySQL 8, always `DROP DATABASE IF EXISTS test` explicitly on setup (Songmu)
 	- use Cwd::abs_path instead of using File::Spec and readlink (Songmu)
