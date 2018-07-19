@@ -33,6 +33,7 @@
       },
       "develop" : {
          "requires" : {
+            "Pod::Markdown::Github" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion::Fast" : "0.04",
             "Test::PAUSE::Permissions" : "0.04",
