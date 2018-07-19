@@ -2,7 +2,7 @@ language: perl
 perl:
     - "5.14"
     - "5.22"
-    - "5.24"
+    - "5.26"
 env:
   - "DATABASE_ADAPTER=mysql-5.5"
   - "DATABASE_ADAPTER=mysql-5.6"

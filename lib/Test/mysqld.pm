@@ -287,6 +287,29 @@ sub _use_mysqld_initialize {
     shift->_verbose_help =~ /--initialize-insecure/ms;
 }
 
+sub _is_maria {
+    my $self = shift;
+    unless (exists $self->{_is_maria}) {
+        $self->{_is_maria} = $self->_verbose_help =~ /\A.*MariaDB/;
+    }
+    $self->{_is_maria};
+}
+
+sub _mysql_version {
+    my $self = shift;
+    unless (exists $self->{_mysql_version}) {
+        ($self->{_mysql_version})
+            = $self->_verbose_help =~ /\A.*Ver ([0-9]+\.[0-9]+\.[0-9]+)/;
+    }
+    $self->{_mysql_version};
+}
+
+sub _mysql_major_version {
+    my $ver = shift->_mysql_version;
+    return unless $ver;
+    +(split /\./, $ver)[0];
+}
+
 sub _get_path_of {
     my $prog = shift;
     my $path = `which $prog 2> /dev/null`;

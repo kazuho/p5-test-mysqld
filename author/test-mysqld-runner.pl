@@ -22,6 +22,10 @@ $mysqld->setup;
 
 print STDERR "runner_pid:\n";
 print STDERR "  $$\n";
+print STDERR "mysql_version:\n";
+print STDERR "  @{[$mysqld->_mysql_major_version]}\n";
+print STDERR "is_maria:\n";
+print STDERR "  @{[$mysqld->_is_maria ? 'true' : 'false']}\n";
 print STDERR "base_dir:\n";
 print STDERR "  @{[$mysqld->base_dir]}\n";
 print STDERR "socket:\n";
