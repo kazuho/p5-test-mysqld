@@ -2,6 +2,9 @@ Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
 
+1.0012 2018-07-23T11:25:42Z
+    - support `copy_data_from` on MySQL 8
+
 1.0011 2018-07-13T09:05:49Z
     - `DROP DATABASE` is not needed on setup even if MySQL 8
     -  [refactoring] apply --ignore-db-dir option when --initialize
