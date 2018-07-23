@@ -4,3 +4,6 @@ authority="cpan:KAZUHO"
 
 module_maker="ModuleBuildTiny"
 markdown_maker = "Pod::Markdown::Github"
+
+[FileGatherer]
+exclude_match = ['^xt/copy-data-from-mysql8*', '^author/*', 'minil.toml']
