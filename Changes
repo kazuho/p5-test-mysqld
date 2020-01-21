@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
+    - Clean out Perl environment (PERL5LIB etc) before calling MySQL
+      Perl programs
 
 1.0012 2018-07-23T11:25:42Z
     - support `copy_data_from` on MySQL 8
