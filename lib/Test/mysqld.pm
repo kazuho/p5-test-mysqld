@@ -241,6 +241,9 @@ sub setup {
             }
         }
         $cmd .= " 2>&1";
+        # The MySQL scripts are in Perl, so clear out all current Perl
+        # related environment variables before the call
+        local @ENV{ grep { /^PERL/ } keys %ENV };
         open $fh, '-|', $cmd
             or die "failed to spawn mysql_install_db:$!";
         my $output;
