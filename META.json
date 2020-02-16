@@ -4,7 +4,7 @@
       "Cybozu Labs, Inc.  Written by Kazuho Oku."
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.9, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -36,7 +36,7 @@
             "Pod::Markdown::Github" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion::Fast" : "0.04",
-            "Test::PAUSE::Permissions" : "0.04",
+            "Test::PAUSE::Permissions" : "0.07",
             "Test::Pod" : "1.41",
             "Test::Spellunker" : "v0.2.7"
          }
@@ -70,7 +70,7 @@
          "web" : "https://github.com/kazuho/p5-test-mysqld"
       }
    },
-   "version" : "1.0012",
+   "version" : "1.0013",
    "x_authority" : "cpan:KAZUHO",
    "x_contributors" : [
       "David Steinbrunner <dsteinbrunner@pobox.com>",
@@ -78,6 +78,7 @@
       "HIROSE Masaaki <hirose31@gmail.com>",
       "Ichinose Shogo <shogo82148@gmail.com>",
       "Jason Galea <jason@lecstor.com>",
+      "Johan Lindstrom <johan.lindstrom@broadbean.com>",
       "John Napiorkowski <jjn1056@yahoo.com>",
       "Kazuho Oku <kazuho@li1.kazuhooku.com>",
       "Kazuho Oku <kazuhooku@gmail.com>",
