@@ -24,7 +24,7 @@ EOC
     sudo apt-get update -q
     sudo rm -rf /var/lib/mysql/ # for downgrade
     sudo DEBIAN_FRONTEND=noninteractive apt-get -q --yes --force-yes -f --option DPkg::Options::=--force-confnew install mysql-server-5.5 mysql-client-5.5 mysql-server-core-5.5
-    exit # no need to upgrade
   fi
   sudo mysql_upgrade
+  sudo service mysql start
 fi
