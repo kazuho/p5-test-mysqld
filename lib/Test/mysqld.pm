@@ -85,10 +85,17 @@ sub dsn {
         if $self->my_cnf->{port};
     if (defined $args{port}) {
         $args{host} ||= $self->my_cnf->{'bind-address'} || '127.0.0.1';
+        $args{user} ||= 'root';
+        if ($self->_use_unix_socket_auth) {
+            # TODO: Set a password,
+            # <https://mariadb.com/kb/en/authentication-from-mariadb-104/>
+        }
     } else {
         $args{mysql_socket} ||= $self->my_cnf->{socket};
+        if (!$self->_use_unix_socket_auth) {
+            $args{user} ||= 'root';
+        }
     }
-    $args{user} ||= 'root';
     $args{dbname} ||= 'test';
     return 'DBI:mysql:' . join(';', map { "$_=$args{$_}" } sort keys %args);
 }
@@ -314,6 +321,18 @@ sub _mysql_version {
     $self->{_mysql_version};
 }
 
+# https://mariadb.com/kb/en/authentication-plugin-unix-socket/
+sub _use_unix_socket_auth {
+    my $self = shift;
+    $self->{_use_unix_socket_auth} = 0;
+    if ($self->_is_maria && defined $self->_mysql_version()) {
+        my ($x, $y, $z) = $self->_mysql_version() =~ /([0-9]+)\.([0-9]+)\.([0-9]+)/;
+        $self->{_use_unix_socket_auth} = ($x > 10 || ($x == 10 && $y > 4)
+            || ($x == 10 && $y == 4 && $z >= 3));
+    }
+    $self->{_use_unix_socket_auth};
+}
+
 sub _mysql_major_version {
     my $ver = shift->_mysql_version;
     return unless $ver;
@@ -427,7 +446,7 @@ Path to C<mysql_install_db> script or C<mysqld> program bundled to the mysqld di
 
 =head2 dsn
 
-Builds and returns dsn by using given parameters (if any).  Default username is 'root', and dbname is 'test'.
+Builds and returns dsn by using given parameters (if any).  Default username depends on a server version and a socket family.  Default dbname is 'test'.
 
 =head2 pid
 
