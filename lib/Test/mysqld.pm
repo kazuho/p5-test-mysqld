@@ -133,8 +133,11 @@ sub wait_for_setup {
         unless defined $self->pid;
     my $pid = $self->pid;
     while (! -e $self->my_cnf->{'pid-file'}) {
-        if (waitpid($pid, WNOHANG) > 0) {
+        my $res = waitpid($pid, WNOHANG);
+        if ($res > 0) {
             die "*** failed to launch mysqld ***\n" . $self->read_log;
+        } elsif ($res < 0) {
+            die "*** failed to launch mysqld; waitpid returned $res (is SIGCHLD set to IGNORE?) ***\n" . $self->read_log;
         }
         sleep 0.1;
     }
