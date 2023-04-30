@@ -168,7 +168,9 @@ sub send_stop_signal {
 sub wait_for_stop {
     my $self = shift;
     local $?; # waitpid may change this value :/
-    while (waitpid($self->pid, 0) <= 0) {
+
+    while (waitpid($self->pid, 0) == 0) {
+        sleep 0.1;
     }
     $self->pid(undef);
     # might remain for example when sending SIGKILL
