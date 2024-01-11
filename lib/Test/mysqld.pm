@@ -322,7 +322,7 @@ sub _mysql_major_version {
 
 sub _get_path_of {
     my $prog = shift;
-    my $path = `which $prog 2> /dev/null`;
+    my $path = `command -v $prog 2> /dev/null`;
     chomp $path
         if $path;
     $path = ''
