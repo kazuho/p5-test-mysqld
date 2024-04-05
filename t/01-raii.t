@@ -18,7 +18,9 @@ my $dsn = $mysqld->dsn;
 
 is(
     $dsn,
-    "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock;user=root",
+    $mysqld->_use_unix_socket_auth ?
+        "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock" :
+        "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock;user=root",
     'check dsn',
 );
 
