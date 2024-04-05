@@ -201,9 +201,11 @@ sub setup {
             or die "could not dircopy @{[$self->copy_data_from]} to " .
                 "@{[$self->my_cnf->{datadir}]}:$!";
         if (!$self->_is_maria && ($self->_mysql_major_version || 0) >= 8) {
-            my $mysql_db_dir = $self->my_cnf->{datadir} . '/mysql';
-            if (! -d $mysql_db_dir) {
-                mkdir $mysql_db_dir or die "failed to mkdir $mysql_db_dir: $!";
+            for my $dir ('mysql', '#innodb_redo') {
+                my $abs_dir = $self->my_cnf->{datadir} . "/$dir";
+                if (! -d $abs_dir) {
+                    mkdir $abs_dir or die "failed to mkdir $abs_dir: $!";
+                }
             }
         }
     }
