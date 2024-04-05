@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kazuho/p5-test-mysqld.svg?branch=master)](https://travis-ci.org/kazuho/p5-test-mysqld)
+[![Actions Status](https://github.com/kazuho/p5-test-mysqld/workflows/test/badge.svg)](https://github.com/kazuho/p5-test-mysqld/actions)
 # NAME
 
 Test::mysqld - mysqld runner for tests
@@ -62,7 +62,7 @@ Path to `mysql_install_db` script or `mysqld` program bundled to the mysqld dist
 
 ## dsn
 
-Builds and returns dsn by using given parameters (if any).  Default username is 'root', and dbname is 'test'.
+Builds and returns dsn by using given parameters (if any).  Default username depends on a server version and a socket family.  Default dbname is 'test'.
 
 ## pid
 

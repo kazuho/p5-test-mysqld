@@ -1,5 +1,5 @@
 name = "Test-mysqld"
-badges = ["travis"]
+badges = ["github-actions"]
 authority="cpan:KAZUHO"
 
 module_maker="ModuleBuildTiny"

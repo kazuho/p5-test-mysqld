@@ -353,7 +353,7 @@ sub _is_ignore_db_dir_required {
         return 0;
     }
     if ( $self->_mysql_major_version >= 8 ) {
-        return 1;
+        return 0;
     }
     if ( $self->_mysql_version =~ /^5\.7\./ ) {
         return 1;

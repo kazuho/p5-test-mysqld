@@ -1,0 +1,25 @@
+name: test
+on:
+  push:
+    branches:
+    - "**"
+  pull_request: {}
+jobs:
+  test:
+    name: Run Test with Perl ${{ matrix.perl }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        perl:
+          - '5.36'
+          - '5.38'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+      - run: |
+          cpanm --quiet --installdeps --notest --with-recommends .
+          prove -lvr
