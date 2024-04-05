@@ -2,6 +2,14 @@ Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
 
+1.0020 2024-04-05T16:35:54Z
+    - introduce GitHub Actions for CI
+    - Use UNIX socket authentication with MariaDB 10.4.3
+    - ignore-db-dir on MySQL 5.7 only
+    - Don't loop endlessly if mysqld fails to start
+    - Replace which with command -v for POSIX-compliant
+    - fix Test 05-copy-data-from.t Fails
+
 1.0013 2020-02-16T16:31:01Z
     - Clean out Perl environment (PERL5LIB etc) before calling MySQL
       Perl programs
