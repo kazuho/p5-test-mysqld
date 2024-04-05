@@ -227,9 +227,7 @@ sub setup {
 
         if ($self->use_mysqld_initialize) {
             $cmd .= ' --initialize-insecure';
-            if ($self->copy_data_from &&
-                !(!$self->_is_maria && ($self->_mysql_major_version || 0) >= 8)
-            ) {
+            if ( $self->copy_data_from && $self->_is_ignore_db_dir_required ) {
                 opendir my $dh, $self->copy_data_from
                     or die "failed to open copy_data_from directory @{[$self->copy_data_from]}: $!";
                 while (my $entry = readdir $dh) {
@@ -237,6 +235,9 @@ sub setup {
                     next if $entry =~ /^\.\.?$/;
                     $cmd .= " --ignore-db-dir=$entry"
                 }
+            }
+            if ( $self->_is_ignore_db_dir_required ) {
+                $cmd .= " --ignore-db-dir=tmp --ignore-db-dir=etc --ignore-db-dir=var";
             }
         } else {
             # `abs_path` resolves nested symlinks and returns canonical absolute path
@@ -323,6 +324,20 @@ sub _mysql_major_version {
     my $ver = shift->_mysql_version;
     return unless $ver;
     +(split /\./, $ver)[0];
+}
+
+sub _is_ignore_db_dir_required {
+    my $self = shift;
+    if ( $self->_is_maria ) {
+        return 0;
+    }
+    if ( $self->_mysql_major_version >= 8 ) {
+        return 1;
+    }
+    if ( $self->_mysql_version =~ /^5\.7\./ ) {
+        return 1;
+    }
+    return 0;
 }
 
 sub _get_path_of {
