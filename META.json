@@ -4,13 +4,13 @@
       "Cybozu Labs, Inc.  Written by Kazuho Oku."
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.9, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.23, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "Test-mysqld",
    "no_index" : {
@@ -66,7 +66,7 @@
       "homepage" : "https://github.com/kazuho/p5-test-mysqld",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/kazuho/p5-test-mysqld.git",
+         "url" : "https://github.com/kazuho/p5-test-mysqld.git",
          "web" : "https://github.com/kazuho/p5-test-mysqld"
       }
    },
@@ -82,14 +82,18 @@
       "John Napiorkowski <jjn1056@yahoo.com>",
       "Kazuho Oku <kazuho@li1.kazuhooku.com>",
       "Kazuho Oku <kazuhooku@gmail.com>",
-      "Masayuki Matsuki <y.songmu@gmail.com>",
+      "Matthew Horsfall <wolfsage@gmail.com>",
       "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
+      "Naoto Nakamura <naoto.nakamura@showroom.co.jp>",
+      "Petr Písař <ppisar@redhat.com>",
+      "Songmu <y.songmu@gmail.com>",
+      "Yoshikazu Sawa <883514+yoshikazusawa@users.noreply.github.com>",
       "Yusuke Watase <ywatase@gmail.com>",
       "Zhenjun Wang <zjwang0414@gmail.com>",
       "hiratara <hiratara@cpan.org>",
       "karupanerura <karupa@cpan.org>",
       "lestrrat <lestrrat+github@gmail.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27400_02",
+   "x_serialization_backend" : "JSON::PP version 4.04",
    "x_static_install" : 1
 }
