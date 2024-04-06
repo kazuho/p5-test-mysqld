@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-(5\.7|8\.0)) ]]; then
+if [[ $DATABASE_ADAPTER =~ (mariadb|mysql-5\.7) ]]; then
   sudo service mysql stop
   sudo apt-get install software-properties-common
   if [[ $DATABASE_ADAPTER =~ mariadb ]]; then
@@ -22,7 +22,7 @@ EOC
     sudo dpkg --install mysql-apt-config_0.8.29-1_all.deb
     sudo apt-get update -q
     sudo apt-cache policy mysql-server
-    sudo apt-get remove --yes mysql-client-8.0 mysql-client-core-8.0
-    sudo apt-get install -q --yes -f --option DPkg::Options::=--force-confnew mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
+    sudo apt-get remove -q --yes mysql-client-8.0 mysql-client-core-8.0
+    sudo apt-get install -q --yes -f mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
   fi
 fi
