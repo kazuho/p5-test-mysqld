@@ -16,11 +16,20 @@ plan tests => 5;
 my $base_dir = $mysqld->base_dir;
 my $dsn = $mysqld->dsn;
 
+my %expect = (
+    mysql => {
+        1 => "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock",
+        0 => "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock;user=root",
+    },
+    MariaDB => {
+        1 => "DBI:MariaDB:dbname=test;mariadb_socket=$base_dir/tmp/mysql.sock",
+        0 => "DBI:MariaDB:dbname=test;mariadb_socket=$base_dir/tmp/mysql.sock;user=root",
+    },
+);
+
 is(
     $dsn,
-    $mysqld->_use_unix_socket_auth ?
-        "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock" :
-        "DBI:mysql:dbname=test;mysql_socket=$base_dir/tmp/mysql.sock;user=root",
+    $expect{$mysqld->{driver}}{$mysqld->_use_unix_socket_auth ? 1 : 0},
     'check dsn',
 );
 

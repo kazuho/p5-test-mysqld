@@ -1,5 +1,6 @@
 requires 'Class::Accessor::Lite';
-requires 'DBD::mysql';
+recommends 'DBD::mysql';
+recommends 'DBD::MariaDB';
 requires 'DBI';
 requires 'File::Copy::Recursive';
 requires 'File::Temp';

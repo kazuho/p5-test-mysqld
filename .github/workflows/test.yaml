@@ -6,20 +6,34 @@ on:
   pull_request: {}
 jobs:
   test:
-    name: Run Test with Perl ${{ matrix.perl }}
+    name: Run Test with Perl ${{ matrix.perl }} on ${{ matrix.mysql }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         perl:
-          - '5.36'
           - '5.38'
+        mysql:
+          - 'mysql-5.7'
+          - 'mysql-8.0'
+          - 'mariadb'
     steps:
       - uses: actions/checkout@v2
       - name: Setup perl
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-      - run: |
-          cpanm --quiet --installdeps --notest --with-recommends .
-          prove -lvr
+      - name: Install dependencies
+        run: |
+          author/ci_install_mysql.sh
+          cpanm --quiet --installdeps --notest .
+          if [[ "$DATABASE_ADAPTER" == "mariadb" ]]; then
+            cpanm --quiet --notest DBD::MariaDB
+          else
+            cpanm --quiet --notest DBD::mysql
+          fi
+        env:
+          DATABASE_ADAPTER: ${{ matrix.mysql }}
+      - run: mysql --version
+      - name: test
+        run: prove -lvr

@@ -12,6 +12,20 @@ use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
 
+my $driver = 'mysql';
+eval {
+    require DBD::mysql;
+};
+if ($@) {
+    eval {
+        require DBD::MariaDB;
+        $driver = 'MariaDB';
+    };
+    if ($@) {
+        die "DBD::mysql or DBD::MariaDB is required to use Test::mysqld";
+    }
+}
+
 our $VERSION = '1.0020';
 
 our $errstr;
@@ -26,6 +40,7 @@ my %Defaults = (
     mysql_install_db      => undef,
     pid                   => undef,
     copy_data_from        => undef,
+    driver                => $driver,
     _owner_pid            => undef,
 );
 
@@ -91,13 +106,14 @@ sub dsn {
             # <https://mariadb.com/kb/en/authentication-from-mariadb-104/>
         }
     } else {
-        $args{mysql_socket} ||= $self->my_cnf->{socket};
+        my $socket_attr = $self->{driver} eq 'MariaDB' ? 'mariadb_socket' : 'mysql_socket';
+        $args{$socket_attr} ||= $self->my_cnf->{socket};
         if (!$self->_use_unix_socket_auth) {
             $args{user} ||= 'root';
         }
     }
     $args{dbname} ||= 'test';
-    return 'DBI:mysql:' . join(';', map { "$_=$args{$_}" } sort keys %args);
+    return "DBI:$self->{driver}:" . join(';', map { "$_=$args{$_}" } sort keys %args);
 }
 
 sub start {
