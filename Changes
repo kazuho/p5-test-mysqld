@@ -1,6 +1,7 @@
 Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
+    - Support DBD::MariaDB
 
 1.0020 2024-04-05T16:35:54Z
     - introduce GitHub Actions for CI

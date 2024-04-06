@@ -12,10 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         perl:
-          - '5.36'
           - '5.38'
         mysql:
-          - 'mysql-5.6'
           - 'mysql-5.7'
           - 'mysql-8.0'
           - 'mariadb'
@@ -25,14 +23,17 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-      - run: |
+      - name: Install dependencies
+        run: |
           author/ci_install_mysql.sh
           cpanm --quiet --installdeps --notest .
-          if [[ "DATABASE_ADAPTER" == "mariadb" ]]; then
-            cpanm DBD::MariaDB
+          if [[ "$DATABASE_ADAPTER" == "mariadb" ]]; then
+            cpanm --quiet --notest DBD::MariaDB
           else
-            cpanm DBD::mysql
+            cpanm --quiet --notest DBD::mysql
           fi
-          prove -lvr
         env:
           DATABASE_ADAPTER: ${{ matrix.mysql }}
+      - run: mysql --version
+      - name: test
+        run: prove -lvr
