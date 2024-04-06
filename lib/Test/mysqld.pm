@@ -26,7 +26,7 @@ if ($@) {
     }
 }
 
-our $VERSION = '1.0020';
+our $VERSION = '1.0030';
 
 our $errstr;
 our @SEARCH_PATHS = qw(/usr/local/mysql);

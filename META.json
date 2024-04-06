@@ -73,7 +73,7 @@
          "web" : "https://github.com/kazuho/p5-test-mysqld"
       }
    },
-   "version" : "1.0020",
+   "version" : "1.0030",
    "x_authority" : "cpan:KAZUHO",
    "x_contributors" : [
       "David Steinbrunner <dsteinbrunner@pobox.com>",
@@ -85,11 +85,11 @@
       "John Napiorkowski <jjn1056@yahoo.com>",
       "Kazuho Oku <kazuho@li1.kazuhooku.com>",
       "Kazuho Oku <kazuhooku@gmail.com>",
+      "Masayuki Matsuki <y.songmu@gmail.com>",
       "Matthew Horsfall <wolfsage@gmail.com>",
       "NAKAGAWA Masaki <masaki.nakagawa@gmail.com>",
       "Naoto Nakamura <naoto.nakamura@showroom.co.jp>",
       "Petr Písař <ppisar@redhat.com>",
-      "Songmu <y.songmu@gmail.com>",
       "Yoshikazu Sawa <883514+yoshikazusawa@users.noreply.github.com>",
       "Yusuke Watase <ywatase@gmail.com>",
       "Zhenjun Wang <zjwang0414@gmail.com>",
