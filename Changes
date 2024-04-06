@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::mysqld.
 
 {{$NEXT}}
+
+1.0030 2024-04-06T14:22:15Z
     - Support DBD::MariaDB
 
 1.0020 2024-04-05T16:35:54Z
