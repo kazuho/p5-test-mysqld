@@ -27,7 +27,12 @@ jobs:
           perl-version: ${{ matrix.perl }}
       - run: |
           author/ci_install_mysql.sh
-          cpanm --quiet --installdeps --notest --with-recommends .
+          cpanm --quiet --installdeps --notest .
+          if [[ "DATABASE_ADAPTER" == "mariadb" ]]; then
+            cpanm DBD::MariaDB
+          else
+            cpanm DBD::mysql
+          fi
           prove -lvr
         env:
           DATABASE_ADAPTER: ${{ matrix.mysql }}

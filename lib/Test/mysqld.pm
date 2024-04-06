@@ -12,6 +12,22 @@ use File::Temp qw(tempdir);
 use POSIX qw(SIGTERM WNOHANG);
 use Time::HiRes qw(sleep);
 
+my $driver = 'mysql';
+BEGIN {
+    eval {
+        require DBD::mysql;
+    };
+    if ($@) {
+        eval {
+            require DBD::MariaDB;
+            $driver = 'MariaDB';
+        };
+        if ($@) {
+            die "DBD::mysql or DBD::MariaDB is required to use Test::mysqld";
+        }
+    }
+}
+
 our $VERSION = '1.0020';
 
 our $errstr;
@@ -27,6 +43,7 @@ my %Defaults = (
     pid                   => undef,
     copy_data_from        => undef,
     _owner_pid            => undef,
+    driver                => $driver,
 );
 
 Class::Accessor::Lite->mk_accessors(keys %Defaults);
@@ -97,7 +114,7 @@ sub dsn {
         }
     }
     $args{dbname} ||= 'test';
-    return 'DBI:mysql:' . join(';', map { "$_=$args{$_}" } sort keys %args);
+    return "DBI:$self->{driver}:" . join(';', map { "$_=$args{$_}" } sort keys %args);
 }
 
 sub start {
